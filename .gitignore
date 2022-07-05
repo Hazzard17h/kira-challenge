@@ -1,0 +1,14 @@
+# dependencies
+node_modules
+
+# CDK compiled output
+/dist
+/tmp
+/out-tsc
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+
+# CDK output
+/cdk/outputs.json
