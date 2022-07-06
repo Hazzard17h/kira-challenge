@@ -18,3 +18,13 @@ cdk.out
 
 # Ansible hosts (IPs)
 /ansible/inventory/host_vars/**/host.yaml
+
+# Terraform status and providers
+/terraform/.terraform*
+/terraform/terraform.tfstate*
+
+# Terraform context variables
+/terraform/terraform.tfvars.json
+
+# Kubernetes config
+/terraform/.kube.config
