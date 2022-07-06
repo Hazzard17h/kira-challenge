@@ -1,0 +1,35 @@
+---
+
+- name: Disable system swap
+  command: "swapoff -a"
+
+- name: Remove swaps from fstab
+  mount:
+    name: "{{ item }}"
+    fstype: swap
+    state: absent
+  with_items:
+  - swap
+  - none
+
+- name: Disable swappiness and let iptables see bridged traffic
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items:
+  - name: vm.swappiness
+    value: "0"
+  - name: net.bridge.bridge-nf-call-iptables
+    value: "1"
+  - name: net.bridge.bridge-nf-call-ip6tables
+    value: "1"
+
+- name: Setup br_netfilter
+  copy:
+    dest: /etc/modules-load.d/k8s.conf
+    content: |
+      br_netfilter
+
+- name: Run sysctl
+  command: sysctl --system

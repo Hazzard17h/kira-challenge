@@ -12,3 +12,9 @@ cdk.out
 
 # CDK output
 /cdk/outputs.json
+
+# Ansible retry
+*.retry
+
+# Ansible hosts (IPs)
+/ansible/inventory/host_vars/**/host.yaml

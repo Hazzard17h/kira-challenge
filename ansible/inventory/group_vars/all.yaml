@@ -1,0 +1,9 @@
+---
+
+ansible_user: ubuntu
+
+k8s_version: 1.23.8
+k8s_binaries:
+- kubelet
+- kubeadm
+- kubectl

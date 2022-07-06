@@ -1,0 +1,32 @@
+---
+
+- name: Wait until hosts are reachable
+  hosts: all
+  tasks:
+  - wait_for_connection:
+
+- name: Install and configure docker
+  hosts: all
+  become: yes
+  roles:
+  - geerlingguy.docker
+  vars:
+    docker_users:
+    - "{{ ansible_user }}"
+    docker_daemon_options:
+      exec-opts: [ "native.cgroupdriver=systemd" ]
+      log-driver: "json-file"
+      log-opts: { max-size: "100m" }
+      storage-driver: "overlay2"
+
+- name: Configure system
+  hosts: all
+  become: yes
+  tasks:
+  - include_tasks: tasks/system.yaml
+
+- name: Install K8S binaries
+  hosts: all
+  become: yes
+  tasks:
+  - include_tasks: tasks/binaries.yaml
