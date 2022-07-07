@@ -2,8 +2,14 @@
 
 - name: Wait until hosts are reachable
   hosts: all
+  gather_facts: no
   tasks:
   - wait_for_connection:
+  - wait_for:
+      port: 22
+      host: "{{ ansible_host }}"
+      search_regex: OpenSSH
+    connection: local
 
 - name: Install and configure docker
   hosts: all
@@ -30,3 +36,11 @@
   become: yes
   tasks:
   - include_tasks: tasks/binaries.yaml
+
+- name: Template kubeadm config file
+  hosts: master
+  become: yes
+  tasks:
+  - template:
+      src: kubeadm-config.j2
+      dest: /etc/kubernetes/kubeadm-config.yaml

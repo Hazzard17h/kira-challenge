@@ -3,7 +3,7 @@
 set -e -o pipefail
 cdir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 
-for x in ssh npm ansible jq; do [[ -x "$(command -v "$x")" ]] || { echo >&2 "$x is not found or not executable"; exit 1; }; done
+for x in ssh npm ansible terraform jq; do [[ -x "$(command -v "$x")" ]] || { echo >&2 "$x is not found or not executable"; exit 1; }; done
 
 echo "### VMs Provisioning ###"
 npm install
@@ -18,4 +18,5 @@ ansible-playbook ansible/configuration.yaml
 echo "### Cluster Provisioning ###"
 "${cdir}/scripts/config-terraform-from-cdk.sh"
 terraform -chdir="${cdir}/terraform/" init
+terraform -chdir="${cdir}/terraform/" apply -target="module.cluster" -auto-approve
 terraform -chdir="${cdir}/terraform/" apply -auto-approve

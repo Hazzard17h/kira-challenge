@@ -8,9 +8,9 @@ The solution is tested under WSL2 Ubuntu 20.04 OS, with bash, but should work on
 
 - AWS account with write credentials for the VMs provisioning, the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) configured with an AWS profile; export it if it's not the `default` profile: `export AWS_PROFILE=profile-name`
 - OpenSSH and an SSH key pair; use `ssh-keygen` to generate a new pair, export key pair paths if they aren't the default (`~/.ssh/id_rsa` and `~/.ssh/id_rsa.pub`): `export ANSIBLE_PRIVATE_KEY_FILE=path/to/key; export SSH_PUBLIC_KEY_FILE=path/to/key.pub`
-- Nodejs ≥ 14.15.0 and NPM installed
-- Ansible ≥ 2.4
-- Terraform ≥ 0.12
+- [Nodejs](https://nodejs.org/en/download/package-manager/) ≥ 14.15.0 and NPM installed
+- [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/index.html) ≥ 2.4
+- [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli?in=terraform/aws-get-started) ≥ 0.12
 - `jq` utility to run the scripts
 
 ## Quick start
@@ -71,9 +71,13 @@ Before apply Terraform resources the hosts IPs and SSH private key (if not the d
 Run Terraform:
 - Init workspace: `terraform -chdir=terraform/ init`
 - See which resources will be created: `terraform -chdir=terraform/ plan`
-- Apply the resources: `terraform -chdir=terraform/ apply`
+- First apply only the cluster module resources: `terraform -chdir=terraform/ apply -target="module.cluster"`; this is because [cannot currently chain together a provider's config with the output of a resource](https://github.com/hashicorp/terraform/issues/4149)
+- Than apply all to also create K8S namespace and run security benchmark: `terraform -chdir=terraform/ apply`
 
 ## Teardown
 
+Manually:
 - Clear Terraform state: `terraform -chdir=terraform/ destroy`
 - Destroy the VMs with: `npx cdk destroy`
+
+Or do it automatically with: `./teardown.sh`

@@ -25,6 +25,30 @@
     selection: hold
   with_items: "{{ k8s_binaries }}"
 
+- name: Configure system for kubelet protect-kernel-defaults
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items:
+  - name: vm.overcommit_memory
+    value: "1"
+  - name: kernel.panic
+    value: "10"
+  - name: kernel.panic_on_oops
+    value: "1"
+
+- name: Run sysctl
+  command: sysctl --system
+
+- name: Configure kubelet protect-kernel-defaults
+  lineinfile:
+    path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+    line: Environment="KUBELET_EXTRA_ARGS=--protect-kernel-defaults"
+    regexp: ^Environment="KUBELET_EXTRA_ARGS=
+    state: present
+    mode: 0644
+
 - name: Restart kubelet
   systemd:
     name: kubelet
