@@ -14,3 +14,18 @@ jobs:
       uses: terraform-linters/setup-tflint@v1
     - name: Run TFLint
       run: tflint -f compact terraform/
+
+  ansible-lint:
+    name: Ansible lint
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v2
+    - name: Set up Python 3
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install ansible-lint
+      run: pip3 install ansible-lint
+    - name: Run ansible-lint
+      run: ansible-lint ansible/
