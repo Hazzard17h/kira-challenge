@@ -27,8 +27,9 @@ export class VMStack extends Stack {
     });
 
     const securityGroup = SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', vpc.vpcDefaultSecurityGroup);
-    securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22));
-    securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(6443));
+    securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(22)); // SSH
+    securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(6443)); // K8S Api
+    securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(30080)); // Application NodePort
 
     const keyName = 'SshKey';
     new CfnKeyPair(this, keyName, { keyName, publicKeyMaterial: sshPublicKey });

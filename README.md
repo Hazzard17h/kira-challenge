@@ -11,6 +11,8 @@ The solution is tested under WSL2 Ubuntu 20.04 OS, with bash, but should work on
 - [Nodejs](https://nodejs.org/en/download/package-manager/) ≥ 14.15.0 and NPM installed
 - [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/index.html) ≥ 2.4
 - [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli?in=terraform/aws-get-started) ≥ 0.12
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) 1.23
+- [helm](https://helm.sh/docs/intro/install/) ≥ 3
 - `jq` utility to run the scripts
 
 ## Quick start
@@ -73,6 +75,31 @@ Run Terraform:
 - See which resources will be created: `terraform -chdir=terraform/ plan`
 - First apply only the cluster module resources: `terraform -chdir=terraform/ apply -target="module.cluster"`; this is because [cannot currently chain together a provider's config with the output of a resource](https://github.com/hashicorp/terraform/issues/4149)
 - Than apply all to also create K8S namespace and run security benchmark: `terraform -chdir=terraform/ apply`
+
+### Application Deployment
+
+The application deployed through Helm is the Prometheus/Grafana stack (without persistent storage) with a basic dashboard to monitor the worker nodes.
+
+Before deploying the application, export the kube-config file path: `export KUBECONFIG="${PWD}/terraform/.kube.config"`
+
+Deploy the application:
+- Add Helm repositories:
+  ```bash
+  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+  helm repo add grafana https://grafana.github.io/helm-charts
+  helm repo update
+  ```
+- Install Helm charts:
+  ```bash
+  helm install prometheus -f "helm/values-prometheus.yaml" prometheus-community/prometheus --namespace kiratech-test
+  helm install grafana -f "helm/values-grafana.yaml" grafana/grafana --namespace kiratech-test
+  ```
+
+Access Grafana:
+- Url: `http://{IP-of-a-node}:30080` (read the IP of the nodes in `cdk/outputs.json`)
+- User: `admin`
+- Password is the output of: `kubectl -n kiratech-test get secret grafana -o json | jq -r '.data["admin-password"]' | base64 -d; echo`
+- Access the dashboard to monitor the worker nodes: Dashboards -> Browse -> General -> Node Exporter Full
 
 ## Teardown
 
