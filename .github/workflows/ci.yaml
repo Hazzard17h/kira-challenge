@@ -1,0 +1,16 @@
+name: Lint
+on:
+  push:
+  pull_request:
+
+jobs:
+  tflint:
+    name: Terraform lint
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v2
+    - name: Setup TFLint
+      uses: terraform-linters/setup-tflint@v1
+    - name: Run TFLint
+      run: tflint -f compact terraform/

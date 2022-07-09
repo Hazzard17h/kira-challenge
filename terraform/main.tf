@@ -51,7 +51,7 @@ resource "null_resource" "kube-bench" {
   connection {
     host        = var.master
     user        = local.user
-    private_key = "${file(var.private_key_file)}"
+    private_key = file(var.private_key_file)
   }
 
   provisioner "remote-exec" {
