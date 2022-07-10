@@ -5,7 +5,8 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "lint": "eslint --ext .js,.ts ."
   },
   "dependencies": {
     "aws-cdk-lib": "^2.0.0",
