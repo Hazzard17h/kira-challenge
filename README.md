@@ -37,6 +37,10 @@ Outputs, in `cdk/outputs.json`:
 - `VMStack.MasterIP`: IP of the master node
 - `VMStack.Worker{1,2}IP`: IPs of the worker nodes
 
+#### Considerations
+
+The choice of the [AWS CDK](https://github.com/aws/aws-cdk) as the provisioning tool is based on the fact that I know it very well, it is open source and a great tool to reproduce an infrastructure architecture in any AWS account and region.
+
 ### Configuration
 
 The configuration of the VMs is done with Ansible.
@@ -54,6 +58,10 @@ Before run Ansible playbook the hosts IPs must be configured from the VMs provis
 Run Ansible:
 - Install Galaxy dependencies: `ansible-galaxy role install geerlingguy.docker`
 - Configure hosts: `ansible-playbook ansible/configuration.yaml`
+
+#### Considerations
+
+I have reused [geerlingguy.docker](https://github.com/geerlingguy/ansible-role-docker) Ansible Galaxy role being that it is open source and community trusted, from one of the main contributors to Ansible Galaxy roles.
 
 ### Cluster Provisioning
 
@@ -75,6 +83,11 @@ Run Terraform:
 - See which resources will be created: `terraform -chdir=terraform/ plan`
 - First apply only the cluster module resources: `terraform -chdir=terraform/ apply -target="module.cluster"`; this is because [cannot currently chain together a provider's config with the output of a resource](https://github.com/hashicorp/terraform/issues/4149)
 - Than apply all to also create K8S namespace and run security benchmark: `terraform -chdir=terraform/ apply`
+
+#### Considerations
+
+The K8S namespace creation is done with the official [Terraform Kubernetes Provider](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs).  
+I have selected [kube-bench](https://github.com/aquasecurity/kube-bench) security benchmark being that it is an open source [CIS Kubernetes Benchmark](https://www.cisecurity.org/benchmark/kubernetes).
 
 ### Application Deployment
 
@@ -101,6 +114,11 @@ Access Grafana:
 - Password is the output of: `kubectl -n kiratech-test get secret grafana -o json | jq -r '.data["admin-password"]' | base64 -d; echo`
 - Access the dashboard to monitor the worker nodes: Dashboards -> Browse -> General -> Node Exporter Full
 
+#### Considerations
+
+The application is deployed using two community open source Helm charts: [Prometheus](https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus) and [Grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana).  
+Both Prometheus and Grafana are deployed as K8S deployements with "RollingUpdate" strategy and with probes healt checks, so they should not have downtime in case of updates.
+
 ## Teardown
 
 Manually:
@@ -108,3 +126,11 @@ Manually:
 - Destroy the VMs with: `npx cdk destroy`
 
 Or do it automatically with: `./teardown.sh`
+
+## Code Linting
+
+The CI pipeline to lint code is done with GitHub Actions through the use of well known open source projects:
+- Terraform: [TFLint](https://github.com/terraform-linters/tflint)
+- Ansible: [ansible-lint](https://github.com/ansible/ansible-lint)
+- Helm (Yaml): [yamllint](https://github.com/adrienverge/yamllint)
+- CDK (TypeScript): [eslint](https://github.com/eslint/eslint) ([typescript-eslint](https://github.com/typescript-eslint/typescript-eslint))
