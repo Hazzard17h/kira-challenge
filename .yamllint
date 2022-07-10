@@ -2,6 +2,9 @@
 
 extends: default
 
+yaml-files:
+- .ansible-lint
+
 rules:
   braces:
     max-spaces-inside: 1

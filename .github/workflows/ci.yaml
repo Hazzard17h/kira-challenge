@@ -29,3 +29,18 @@ jobs:
       run: pip3 install ansible-lint
     - name: Run ansible-lint
       run: ansible-lint ansible/
+
+  yamllint:
+    name: Yaml lint
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v2
+    - name: Set up Python 3
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install yamllint
+      run: pip3 install yamllint
+    - name: Run yamllint
+      run: yamllint .

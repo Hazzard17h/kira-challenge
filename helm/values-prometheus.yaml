@@ -1,4 +1,4 @@
-### https://artifacthub.io/packages/helm/prometheus-community/prometheus
+---  ### https://artifacthub.io/packages/helm/prometheus-community/prometheus
 
 ## Define serviceAccount names for components. Defaults to component's fully qualified name.
 ##
