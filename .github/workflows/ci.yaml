@@ -1,0 +1,68 @@
+---
+
+name: Lint
+on:
+  push:
+  pull_request:
+
+jobs:
+  tflint:
+    name: Terraform lint
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v2
+    - name: Setup TFLint
+      uses: terraform-linters/setup-tflint@v1
+    - name: Run TFLint
+      run: tflint -f compact terraform/
+
+  ansible-lint:
+    name: Ansible lint
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v2
+    - name: Set up Python 3
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install ansible-lint
+      run: pip3 install ansible-lint
+    - name: Run ansible-lint
+      run: ansible-lint ansible/
+
+  yamllint:
+    name: Yaml lint
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v2
+    - name: Set up Python 3
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install yamllint
+      run: pip3 install yamllint
+    - name: Run yamllint
+      run: yamllint .
+
+  eslint:
+    name: ESlint
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v2
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+    - name: Cache NPM packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.npm
+        key: build-${{ hashFiles('**/package-lock.json') }}
+    - name: Install NPM packages
+      run: npm ci --no-optional
+    - name: Lint
+      run: npm run lint

@@ -1,0 +1,18 @@
+---
+
+extends: default
+
+yaml-files:
+- .ansible-lint
+
+rules:
+  braces:
+    max-spaces-inside: 1
+    level: error
+  brackets:
+    max-spaces-inside: 1
+    level: error
+  indentation:
+    indent-sequences: consistent
+  truthy:
+    allowed-values: ['true', 'false', 'yes', 'no']

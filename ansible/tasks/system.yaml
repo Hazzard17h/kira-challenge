@@ -28,6 +28,7 @@
 - name: Setup br_netfilter
   copy:
     dest: /etc/modules-load.d/k8s.conf
+    mode: 0644
     content: |
       br_netfilter
 
